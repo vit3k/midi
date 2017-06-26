@@ -29,8 +29,7 @@ class Controller(MidiDevice):
 
   def handle(self):
     for msg in self.input.iter_pending():
-      if msg.type == 'program_change':
-        pass
+      self.pass_to_listeners(msg)
 
   def pass_to_listeners(self, msg):
     for device in self.output_devices:
