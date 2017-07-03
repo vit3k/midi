@@ -17,3 +17,6 @@ class OutputDevice(MidiDevice):
     print('Changing program to {}'.format(program))
     program_change = mido.Message('program_change', program=program)
     self.output.send(program_change)    
+
+  def close(self):
+    self.output.close()

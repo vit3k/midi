@@ -1,11 +1,11 @@
 from device_manager import DeviceManager
 from midi_looper import MidiLooper
 import time
-from flask import Flask
+#from flask import Flask
 
 config = {
   'outputs': {
-    'KATANA 1': {
+    'KATANA:KATANA MIDI 1 16:0': {
       'max_patches': 5,
       'map': {
         0: 0,
@@ -17,7 +17,7 @@ config = {
     }
   },
   'inputs': {
-    'ZOOM G Series': {
+    'ZOOM G Series:ZOOM G Series MIDI 1 20:0': {
     }
   }
 }
@@ -27,9 +27,17 @@ midi_looper = MidiLooper(device_manager)
 
 midi_looper.start()
 
-app = Flask(__name__)
-@app.route('/device_changed') 
-def device_changed(): 
-    device_manager.on_device_changed()
+#app = Flask(__name__)
+#@app.route('/device_changed') 
+#def device_changed(): 
+#    device_manager.on_device_changed()
 
-app.run(port=8181, host='0.0.0.0', debug=False, use_reloader=False)
+while True:
+  with open('/midi') as fifo:
+    while True:
+      data = fifo.read()
+      if len(data) == 0:
+        break
+      device_manager.on_device_changed()
+
+#app.run(port=8181, host='0.0.0.0', debug=False, use_reloader=False)

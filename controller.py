@@ -12,4 +12,7 @@ class Controller(MidiDevice):
   def pass_to_listeners(self, msg, output_devices):
     for device in output_devices:
       if msg.type == 'program_change':
-        device.change_patch(msg.program)
+        output_devices[device].change_patch(msg.program)
+
+  def close(self):
+    self.input.close()        

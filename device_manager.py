@@ -12,7 +12,9 @@ class DeviceManager:
     self.config = config
 
   def process_outputs(self):
+    print('Process outputs')
     new_output_device_list = mido.get_output_names()
+    print(new_output_device_list)
     for device in new_output_device_list:
       if device not in self.output_device_list:
         if device in self.config['outputs'] and device not in self.outputs:
@@ -22,20 +24,22 @@ class DeviceManager:
 
     for device in self.output_device_list:
       if device not in new_output_device_list and device in self.outputs:
-        self.outputs[device].close()
+        #self.outputs[device].close()
         del self.outputs[device]
         print('{} removed from outputs'.format(device))
 
     self.output_device_list = new_output_device_list
 
   def controller_factory(self, device):
-    if device == 'ZOOM G Series':
+    if device == 'ZOOM G Series:ZOOM G Series MIDI 1 20:0':
       return ZoomG3Controller()
     else:
       return Controller(device)
 
   def process_inputs(self):
+    print('Process inputs')
     new_input_device_list = mido.get_input_names()
+    print(new_input_device_list)
     for device in new_input_device_list:
       if device not in self.input_device_list:
         if device in self.config['inputs'] and device not in self.inputs:
@@ -45,16 +49,17 @@ class DeviceManager:
 
     for device in self.input_device_list:
       if device not in new_input_device_list and device in self.inputs:
-        self.intputs[device].close()
+        #self.intputs[device].close()
         del self.inputs[device]
         print('{} removed from inputs'.format(device))
 
     self.input_device_list = new_input_device_list
 
   def on_device_changed(self):
+    print('Devices changed')
     self.process_outputs()
     self.process_inputs()
 
   def handle_inputs(self):
     for input in self.inputs:
-      input.handle(self.outputs)
+      self.inputs[input].handle(self.outputs)
