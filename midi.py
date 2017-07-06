@@ -4,8 +4,9 @@ import time
 #from flask import Flask
 
 config = {
-  'outputs': {
-    'KATANA:KATANA MIDI 1 16:0': {
+  'outputs': [
+    {
+      'device': 'KATANA MIDI 1',
       'max_patches': 5,
       'map': {
         0: 0,
@@ -15,11 +16,12 @@ config = {
         4: 2
       }
     }
-  },
-  'inputs': {
-    'ZOOM G Series:ZOOM G Series MIDI 1 20:0': {
+  ],
+  'inputs': [
+    {
+      'device': 'ZOOM G Series MIDI 1'
     }
-  }
+  ]
 }
 
 device_manager = DeviceManager(config)

@@ -12,5 +12,6 @@ class MidiLooper(threading.Thread):
     print('Listening for midi...')
 
     while True:
-      self.device_manager.handle_inputs()
-      time.sleep(0.01)
+      #self.device_manager.handle_inputs()
+      #time.sleep(0.1)
+      pass
