@@ -15,14 +15,12 @@ class DeviceManager:
     return next(iter([x for x in config if x['device'] in device] or []), None)
 
   def process_outputs(self):
-    print('Process outputs')
+    print('Process outputs...`')
     new_output_device_list = mido.get_output_names()
     print(new_output_device_list)
     for device in new_output_device_list:
       if device not in self.output_device_list:
         dev_config = self.get_devconfig(device, self.config['outputs'])
-        print(device)
-        print(dev_config)
         if dev_config is not None and device not in self.outputs:
           self.outputs[device] = OutputDevice(device, dev_config['map'], dev_config['max_patches'])
           print('{} added as output'.format(device))
@@ -34,24 +32,21 @@ class DeviceManager:
 
     self.output_device_list = new_output_device_list
 
-  def controller_factory(self, device):
-    if 'ZOOM G Series MIDI 1' in device:
-      print('zoom')
-      return ZoomG3Controller(self)
+  def controller_factory(self, dev_config):
+    if ZoomG3Controller.get_type() == dev_config['type']:
+      return ZoomG3Controller(dev_config['device'], dev_config['output_device'], self, self.config['callbacks'])
     else:
-      return Controller(device, self)
+      return Controller(dev_config['device'], self, self.config['callbacks'])
 
   def process_inputs(self):
-    print('Process inputs')
+    print('Process inputs...')
     new_input_device_list = mido.get_input_names()
     print(new_input_device_list)
     for device in new_input_device_list:
       if device not in self.input_device_list:
         dev_config = self.get_devconfig(device, self.config['inputs'])
-        print(device)
-        print(dev_config)
         if dev_config is not None and device not in self.inputs:
-          self.inputs[device] = self.controller_factory(device)
+          self.inputs[device] = self.controller_factory(dev_config)
           print('{} added as input'.format(device))
 
     for device in self.input_device_list:
@@ -63,6 +58,5 @@ class DeviceManager:
     self.input_device_list = new_input_device_list
 
   def on_device_changed(self):
-    print('Devices changed')
     self.process_outputs()
     self.process_inputs()

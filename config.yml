@@ -1,0 +1,16 @@
+outputs:
+  - device: KATANA MIDI 1
+    max_patches: 5
+    map:
+      0: 4
+      1: 2
+      2: 0
+      3: 1
+      4: 3
+
+inputs:
+  - device: ZOOM G Series MIDI 1
+    type: zoomg3
+    output_device: ZOOM G Series MIDI 1
+
+callbacks: true

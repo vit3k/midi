@@ -1,45 +1,50 @@
 from device_manager import DeviceManager
-from midi_looper import MidiLooper
 import time
-#from flask import Flask
+import yaml
+import re
+try:
+  import pyudev 
+except Exception:
+  print('No UDEV support.')
 
-config = {
-  'outputs': [
-    {
-      'device': 'KATANA MIDI 1',
-      'max_patches': 5,
-      'map': {
-        0: 0,
-        1: 0,
-        2: 3,
-        3: 4,
-        4: 2
-      }
-    }
-  ],
-  'inputs': [
-    {
-      'device': 'ZOOM G Series MIDI 1'
-    }
-  ]
-}
+print('Starting midi bridge...')
+
+with open('config.yml') as config_file:
+  config = yaml.load(config_file)
+  print('Using config:')
+  print(config)
 
 device_manager = DeviceManager(config)
-midi_looper = MidiLooper(device_manager)
+print('Initializing devices...')
+device_manager.on_device_changed()
 
-midi_looper.start()
+print('Bridge initialized. Listening for midi...')
 
-#app = Flask(__name__)
-#@app.route('/device_changed') 
-#def device_changed(): 
-#    device_manager.on_device_changed()
-
-while True:
-  with open('/midi') as fifo:
+try:
+  try:
+    udev_context = pyudev.Context()
+    print('UDEV supported. Setup monitoring...')
+    udev_monitor = pyudev.Monitor.from_netlink(udev_context)
+    udev_monitor.filter_by('sound')
+    reg = re.compile('midi[A-Za-z0-9]+')
     while True:
-      data = fifo.read()
-      if len(data) == 0:
-        break
-      device_manager.on_device_changed()
-
-#app.run(port=8181, host='0.0.0.0', debug=False, use_reloader=False)
+      device = udev_monitor.poll()
+      
+      if reg.match(device.sys_name):
+        print('{}: {}'.format(device.action, device.sys_name))
+        device_manager.on_device_changed()
+  except NameError:
+    while True:
+      try:
+        with open('/midi') as fifo:
+          while True:
+            print('Waiting for devices changes...')
+            data = fifo.read()
+            if len(data) == 0:
+              break
+            print('Updating devices...')
+            device_manager.on_device_changed()
+      except IOError:
+        time.sleep(0.5)  
+except KeyboardInterrupt:
+  print('Shutting down...')
