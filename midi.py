@@ -2,14 +2,17 @@ from device_manager import DeviceManager
 import time
 import yaml
 import re
-try:
-  import pyudev 
-except Exception:
-  print('No UDEV support.')
+import sys
+import argparse
 
-print('Starting midi bridge...')
+parser = argparse.ArgumentParser(description='Midi bridge')
+parser.add_argument('-c', '--config', default='config.yml', help='Path to config file')
 
-with open('config.yml') as config_file:
+args = parser.parse_args()
+
+print('Starting midi bridge with config file {}'.format(args.config))
+
+with open(args.config) as config_file:
   config = yaml.load(config_file)
   print('Using config:')
   print(config)
@@ -17,6 +20,11 @@ with open('config.yml') as config_file:
 device_manager = DeviceManager(config)
 print('Initializing devices...')
 device_manager.on_device_changed()
+
+try:
+  import pyudev 
+except Exception:
+  print('No UDEV support.')
 
 print('Bridge initialized. Listening for midi...')
 

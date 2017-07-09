@@ -3,7 +3,9 @@ from midi_device import MidiDevice
 
 class Controller(MidiDevice):
   def __init__(self, input_name, device_manager, callbacks):
+    print(input_name)
     self.input_name = self.get_port(mido.get_input_names(), input_name)
+    print(self.input_name)
     self.input = mido.open_input(self.input_name)
     self.device_manager = device_manager
     if callbacks:
