@@ -15,7 +15,7 @@ class DeviceManager:
     return next(iter([x for x in config if x['device'] in device] or []), None)
 
   def process_outputs(self):
-    print('Process outputs...`')
+    print('Process outputs...')
     new_output_device_list = mido.get_output_names()
     print(new_output_device_list)
     for device in new_output_device_list:
